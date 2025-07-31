@@ -1,0 +1,7 @@
+
+class MediaRenamerException(Exception):
+    pass
+
+class FileException(MediaRenamerException):
+    def __init__(self, message):
+        super(FileException, self).__init__(message)
