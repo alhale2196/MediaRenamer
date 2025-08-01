@@ -26,8 +26,13 @@ DEBUG = False
 DRY_RUN = False
 
 
-def run():
+def run(debug: bool = False, dry_run: bool = False, verbose: bool = False, ignore_errors: bool = False, output_file: str = None):
     pass
+
+
+def run_media_info(debug:bool = False, verbose:bool = False):
+    pass
+
 
 def main():
     parser = argparse.ArgumentParser(description='A simple command line tool for media handling and processing for Plex library')
