@@ -102,17 +102,32 @@ def get_list_of_files_in_directory(directory: str) -> Optional[List[str]]:
     except Exception as e:
         raise FileException(str(e))
 
-def rename_file(current_filename: str, new_filename: str) -> bool:
+def rename_file(current_file_name: str, new_file_name: str) -> bool:
     """
     Renames a file.
 
-    :param current_filename: The current filename.
-    :param new_filename: The new filename.
+    :param current_file_name: The current file name.
+    :param new_file_name: The new file name.
 
     :return: True if the file was renamed, False otherwise.
     """
     try:
-        os.rename(current_filename, new_filename)
+        os.rename(current_file_name, new_file_name)
+        return True
+    except Exception as e:
+        raise FileException(str(e))
+
+def rename_directory(current_directory_name: str, new_directory_name: str) -> bool:
+    """
+    Renames a directory.
+
+    :param current_directory_name: The current directory name.
+    :param new_directory_name: The new directory name.
+
+    :return: True if the directory was renamed, False otherwise.
+    """
+    try:
+        os.rename(current_directory_name, new_directory_name)
         return True
     except Exception as e:
         raise FileException(str(e))
