@@ -5,3 +5,7 @@ class MediaRenamerException(Exception):
 class FileException(MediaRenamerException):
     def __init__(self, message):
         super(FileException, self).__init__(message)
+
+class ParserException(MediaRenamerException):
+    def __init__(self, message):
+        super(ParserException, self).__init__(message)
