@@ -62,9 +62,9 @@ def write_to_file(filename: str, content: str, log: logging.Logger, overwrite: b
                 log.exception(str(e))
                 raise FileException(str(e))
 
-def get_current_directory_basename(log: logging.Logger) -> Optional[str]:
+def extract_current_directory_basename(log: logging.Logger) -> Optional[str]:
     """
-    Gets the current directory name.
+    Extracts the current directory name.
 
     :param log: The configured logger to write to.
 
@@ -81,9 +81,9 @@ def get_current_directory_basename(log: logging.Logger) -> Optional[str]:
         log.exception(str(e))
         raise FileException(str(e))
 
-def get_list_of_folders_in_directory(directory: str, log: logging.Logger) -> Optional[List[str]]:
+def extract_list_of_folders_in_directory(directory: str, log: logging.Logger) -> Optional[List[str]]:
     """
-    Gets a list of all folders in a directory.
+    Extracts a list of all folders in a directory.
 
     :param directory: The directory to get folders from.
     :param log: The configured logger to write to.
@@ -103,9 +103,9 @@ def get_list_of_folders_in_directory(directory: str, log: logging.Logger) -> Opt
         log.exception(str(e))
         raise FileException(str(e))
 
-def get_list_of_files_in_directory(directory: str, log: logging.Logger) -> Optional[List[str]]:
+def extract_list_of_files_in_directory(directory: str, log: logging.Logger) -> Optional[List[str]]:
     """
-    Gets a list of all files in a directory.
+    Extracts a list of all files in a directory.
 
     :param directory: The directory to get files from.
     :param log: The configured logger to write to.
@@ -163,9 +163,9 @@ def rename_directory(current_directory_name: str, new_directory_name: str, log: 
         log.exception(str(e))
         raise FileException(str(e))
 
-def get_file_extension(filename: str, log: logging.Logger) -> Optional[str]:
+def extract_file_extension(filename: str, log: logging.Logger) -> Optional[str]:
     """
-    Gets the file extension.
+    Extracts the file extension.
 
     :param filename: The filename.
     :param log: The configured logger to write to.

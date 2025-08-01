@@ -6,24 +6,19 @@ import argparse
 
 try:
     from .version import __version__
-    from .logging import log
-    from .file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
-        get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
+    from .exceptions import MediaRenamerException
+    from .media_log import get_configured_logger
+    from .file_utils import write_to_file, extract_current_directory_basename, extract_list_of_folders_in_directory, \
+        extract_list_of_files_in_directory, rename_file, rename_directory, extract_file_extension
+    from .utils import extract_season_number_from_directory_name, extract_episode_number_from_file_name, extract_show_year_from_directory_name
 except ImportError:
     __version__ = 'development'
     sys.path.append('./')
-    from logging import log
+    from media_log import get_configured_logger
+    from exceptions import MediaRenamerException
     from file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
         get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
-
-
-VERBOSE = False
-VERSION = __version__
-IGNORE_ERRORS = False
-WRITE_TO_FILE = False
-FILENAME_TO_WRITE = None
-DEBUG = False
-DRY_RUN = False
+    from utils import get_season_number_from_folder_name, get_episode_number_from_file_name, extract_show_year_from_directory_name
 
 
 def run(debug: bool = False, dry_run: bool = False, verbose: bool = False, ignore_errors: bool = False, output_file: str = None):
@@ -31,10 +26,37 @@ def run(debug: bool = False, dry_run: bool = False, verbose: bool = False, ignor
 
 
 def run_media_info(debug:bool = False, verbose:bool = False):
-    pass
+    """
+    The run media info run type function.
+
+    :param debug: Is debug enabled.
+    :param verbose: Is verbose enabled.
+    """
+    try:
+        if debug:
+            log = get_configured_logger(__name__, log_level='DEBUG')
+        else:
+            log = get_configured_logger(__name__, log_level='INFO')
+    except Exception as e:
+        raise MediaRenamerException(str(e))
+
+    log.info('Getting media info for current directory...')
+    try:
+        directory_basename = get_current_directory_basename(log)
+        if not directory_basename:
+            log.error('Failed to get directory basename.')
+    except Exception as e:
+        log.exception(MediaRenamerException(str(e)))
 
 
 def main():
+    VERBOSE = False
+    IGNORE_ERRORS = False
+    WRITE_TO_FILE = False
+    FILENAME_TO_WRITE = None
+    DEBUG = False
+    DRY_RUN = False
+
     parser = argparse.ArgumentParser(description='A simple command line tool for media handling and processing for Plex library')
 
     general_group = parser.add_argument_group('General Options')
@@ -64,19 +86,27 @@ def main():
     if args.dry_run:
         DRY_RUN = True
 
+
     if args.run:
-        pass
+        if WRITE_TO_FILE:
+            run(DEBUG, DRY_RUN, VERBOSE, IGNORE_ERRORS, FILENAME_TO_WRITE)
+        else:
+            run(DEBUG, DRY_RUN, VERBOSE, IGNORE_ERRORS)
+
     elif args.media_info:
-        pass
+        run_media_info(DEBUG, VERBOSE)
+
     elif args.version:
-        if VERSION == 'development':
+        if __version__ == 'development':
             print('MediaRenamer Development Version')
         else:
-            print(f'MediaRenamer v{VERSION}')
+            print(f'MediaRenamer v{__version__}')
         return
+
     elif args.update:
         print('Update function not currently implemented.')
         return
+
     else:
         parser.print_help()
 
