@@ -12,7 +12,7 @@ except ImportError:
 def get_configured_logger(name: str = None, log_level: str = 'INFO') -> logging.Logger:
     log = logging.getLogger(name or __name__)
     log.setLevel(log_level)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+    formatter = logging.Formatter('[%(levelname)s]: %(message)s')
 
     general_handler = logging.StreamHandler(sys.stdout)
     if log_level == 'DEBUG':
