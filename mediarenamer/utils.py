@@ -2,35 +2,19 @@ import os
 import sys
 import json
 import re
+import logging
 from typing import Optional, List
 
 try:
-    from .exceptions import FileException
-except ImportError:
-    sys.path.append('./')
-    from exceptions import MediaRenamerException, FileException, ParserException
+    from .exceptions import MediaRenamerException, ParserException
+    from .file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
+        get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
 
-try:
-    from .file_utils import (
-    write_to_file,
-    get_current_directory_basename,
-    get_list_of_folders_in_directory,
-    get_list_of_files_in_directory,
-    rename_file,
-    rename_directory,
-    get_file_extension,
-    )
 except ImportError:
     sys.path.append('./')
-    from file_utils import (
-        write_to_file,
-        get_current_directory_basename,
-        get_list_of_folders_in_directory,
-        get_list_of_files_in_directory,
-        rename_file,
-        rename_directory,
-        get_file_extension,
-    )
+    from .exceptions import MediaRenamerException, ParserException
+    from .file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
+        get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
 
 
 def get_season_number_from_folder_name(folder_name: str) -> Optional[int]:

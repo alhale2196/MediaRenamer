@@ -4,10 +4,10 @@ import json
 from typing import List, Optional
 
 try:
-    from .exceptions import FileException
+    from .exceptions import MediaRenamerException, FileException
 except ImportError:
     sys.path.append('./')
-    from exceptions import FileException
+    from exceptions import MediaRenamerException, FileException
 
 
 def write_to_file(filename: str, content: str, overwrite: bool = False, json_data: bool = True) -> bool:

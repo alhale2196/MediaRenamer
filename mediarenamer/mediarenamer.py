@@ -6,30 +6,16 @@ import argparse
 
 try:
     from .version import __version__
+    from .logging import log
+    from .file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
+        get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
 except ImportError:
     __version__ = 'development'
-
-try:
-    from .file_utils import (
-        write_to_file,
-        get_current_directory_basename,
-        get_list_of_folders_in_directory,
-        get_list_of_files_in_directory,
-        rename_file,
-        rename_directory,
-        get_file_extension,
-    )
-except ImportError:
     sys.path.append('./')
-    from file_utils import (
-        write_to_file,
-        get_current_directory_basename,
-        get_list_of_folders_in_directory,
-        get_list_of_files_in_directory,
-        rename_file,
-        rename_directory,
-        get_file_extension,
-    )
+    from logging import log
+    from file_utils import write_to_file, get_current_directory_basename, get_list_of_folders_in_directory, \
+        get_list_of_files_in_directory, rename_file, rename_directory, get_file_extension
+
 
 VERBOSE = False
 VERSION = __version__
