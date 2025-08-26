@@ -13,9 +13,10 @@ try:
     from .file_utils import write_to_file, extract_current_directory_basename, extract_list_of_folders_in_directory, \
         extract_list_of_files_in_directory, rename_file, rename_directory, extract_file_extension, delete_file, \
         parse_files_in_directory_to_delete, scan_directory, extract_directory_basename, extract_file_basename, \
-        create_directory_for_movie_file
+        create_directory_for_movie_file, recursively_list_contents_in_directory
     from .utils import extract_season_number_from_directory_name, extract_episode_number_from_file_name, \
         extract_show_year_from_directory_name, extract_show_name_from_directory_basename, extract_movie_year_from_string
+    from .config import ALLOWED_FILE_EXTENSIONS
 except ImportError:
     __version__ = 'development'
     sys.path.append('./')
@@ -24,9 +25,10 @@ except ImportError:
     from file_utils import write_to_file, extract_current_directory_basename, extract_list_of_folders_in_directory, \
         extract_list_of_files_in_directory, rename_file, rename_directory, extract_file_extension, delete_file, \
         parse_files_in_directory_to_delete, scan_directory, extract_directory_basename, extract_file_basename, \
-        create_directory_for_movie_file
+        create_directory_for_movie_file, recursively_list_contents_in_directory
     from utils import extract_season_number_from_directory_name, extract_episode_number_from_file_name, \
         extract_show_year_from_directory_name, extract_show_name_from_directory_basename, extract_movie_year_from_string
+    from config import ALLOWED_FILE_EXTENSIONS
 
 
 MEDIA_FILE_EXTENSIONS = [
@@ -306,7 +308,95 @@ def run_tv(debug: bool = False, dry_run: bool = False, verbose: bool = False, ig
 
 
 def test_run():
-    print(extract_current_directory_basename())
+    log = media_log(log_level='DEBUG')
+
+    log.info('Starting media renamer in test mode...')
+
+    current_directory = os.getcwd()
+
+    results = {}
+
+    scanned_folders = extract_list_of_folders_in_directory(current_directory)
+
+    for folder in scanned_folders:
+        scanned = {}
+        scanned_folders = []
+        scanned_files = []
+        try:
+            for root, dirs, files in os.walk(current_directory):
+                # Get subdirectories
+                for d in dirs:
+                    folder_path = os.path.join(root, d)
+                    scanned_folders.append(folder_path)
+
+                # Get files
+                for f in files:
+                    file_path = os.path.join(root, f)
+                    scanned_files.append(file_path)
+
+        except Exception as e:
+            log.exception(str(e))
+            continue
+
+        scanned['folders'] = scanned_folders
+        scanned['files'] = scanned_files
+        results[folder] = scanned
+
+
+def test2():
+    log = media_log(log_level='DEBUG')
+    log.info('Starting media renamer in test mode...')
+    current_directory = os.getcwd()
+    current_basename = extract_current_directory_basename()
+    show_name = extract_show_name_from_directory_basename(current_basename)
+    log.info(f'Show: {show_name}')
+
+    scanned_folders = []
+    scanned_files = []
+    try:
+        for root, dirs, files in os.walk(current_directory):
+            # Get subdirectories
+            for d in dirs:
+                folder_path = os.path.join(root, d)
+                scanned_folders.append(folder_path)
+
+            # Get files
+            for f in files:
+                file_path = os.path.join(root, f)
+                scanned_files.append(file_path)
+
+    except Exception as e:
+        log.exception(str(e))
+        exit(1)
+
+    for file in scanned_files:
+        log.debug(f'File: {file}')
+        file_extension = extract_file_extension(file)
+        if not file_extension:
+            log.warning(f'File extension not recognized: {file}')
+            continue
+        if file_extension not in ALLOWED_FILE_EXTENSIONS:
+            log.warning(f'File extension not allowed: {file}')
+            delete_file(file)
+            continue
+        file_season = extract_season_number_from_directory_name(file)
+        file_episode = extract_episode_number_from_file_name(file)
+        if not file_season or not file_episode:
+            log.warning(f'Couldnt extract season or episode number for file: {file}')
+            continue
+        else:
+            file_basename = extract_file_basename(file)
+            file_path = os.path.dirname(file)
+            episode_details = file_basename.split('-')[-1]
+            if episode_details:
+                new_file_basename = f'{show_name} S{file_season}E{file_episode} - {episode_details}'
+            else:
+                new_file_basename = f'{show_name} S{file_season}E{file_episode}.{file_extension}'
+
+            new_file = os.path.join(file_path, new_file_basename)
+            if not rename_file(file, new_file):
+                log.error(f'Rename failed for file: {file}')
+                continue
 
 
 def main():
@@ -358,7 +448,8 @@ def main():
         run_media_info(DEBUG, VERBOSE)
 
     elif args.test:
-        test_run()
+        #test_run()
+        test2()
 
     elif args.version:
         if __version__ == 'development':

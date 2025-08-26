@@ -1,16 +1,16 @@
 import os
 import sys
 import json
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 try:
     from .config import ALLOWED_FILE_EXTENSIONS
-    from .exceptions import MediaRenamerException, FileException
+    from .exceptions import MediaRenamerException, FileException, ParserException, DirectoryScanException
     from .utils import extract_season_number_from_directory_name, extract_episode_number_from_file_name
 except ImportError:
     sys.path.append('./')
     from config import ALLOWED_FILE_EXTENSIONS
-    from exceptions import MediaRenamerException, FileException, ParserException
+    from exceptions import MediaRenamerException, FileException, ParserException, DirectoryScanException
     from utils import extract_season_number_from_directory_name, extract_episode_number_from_file_name
 
 
@@ -309,7 +309,31 @@ def create_directory_for_movie_file(file_name: str) -> Optional[str]:
         raise FileException(str(e))
 
 
+def recursively_list_contents_in_directory(directory: str) -> Tuple[List[str], List[str]]:
+    """
+    Recursively lists the contents of a directory.
 
+    :param directory: The directory to get contents from.
+
+    :return: List of all files and folders in the directory.
+    """
+    folders = []
+    files = []
+    try:
+        for root, dirs, files in os.walk(directory):
+            # Get subdirectories
+            for d in dirs:
+                folder_path = os.path.join(root, d)
+                folders.append(folder_path)
+
+            # Get files
+            for f in files:
+                file_path = os.path.join(root, f)
+                files.append(file_path)
+
+    except Exception as e:
+        print(DirectoryScanException(str(e)))
+    return folders, files
 
 
 
