@@ -324,14 +324,12 @@ def recursively_list_contents_in_directory(directory: str) -> Tuple[List[str], L
             # Get subdirectories
             for d in dirs:
                 folder_path = os.path.join(root, d)
-                x = folder_path.replace(directory, '')
-                folders.append(x[1:])
+                folders.append(folder_path)
 
             # Get files
             for f in files:
                 file_path = os.path.join(root, f)
-                y = file_path.replace(directory, '')
-                files.append(y[1:])
+                files.append(file_path)
 
     except Exception as e:
         print(DirectoryScanException(str(e)))
