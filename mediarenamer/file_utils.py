@@ -309,7 +309,7 @@ def create_directory_for_movie_file(file_name: str) -> Optional[str]:
         raise FileException(str(e))
 
 
-def recursively_list_contents_in_directory(directory: str) -> Tuple[List[str], List[str]]:
+def recursively_list_contents_in_directory(directory: str) -> Optional[dict]:
     """
     Recursively lists the contents of a directory.
 
@@ -317,6 +317,7 @@ def recursively_list_contents_in_directory(directory: str) -> Tuple[List[str], L
 
     :return: List of all files and folders in the directory.
     """
+    data = {}
     folders = []
     files = []
     try:
@@ -331,9 +332,14 @@ def recursively_list_contents_in_directory(directory: str) -> Tuple[List[str], L
                 file_path = os.path.join(root, f)
                 files.append(file_path)
 
+        data['folders'] = folders
+        data['files'] = files
+        return data
+
     except Exception as e:
         print(DirectoryScanException(str(e)))
-    return folders, files
+
+    return data
 
 
 
